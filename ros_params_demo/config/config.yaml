@@ -1,0 +1,14 @@
+# parameters configuration
+
+# read params
+state_topic_:   state_t
+sensor_topic_:  sensor_t
+cmd1_topic_:    spd_command
+cmd2_topic_:    str_command
+program_id_:    ros_params_demo
+float_var:      1234.5
+Boolean_var:    true
+list_vars: [1.0, 2.0]
+dictionary_vars:  {a: 1, c: 2, b: 3}
+
+# write params

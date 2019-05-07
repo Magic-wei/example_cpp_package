@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <arg name="config" default="$(find ros_params_demo)/config/config.yaml" />
+
+  <node pkg="ros_params_demo" name="ros_params_demo" type="ros_params_demo" output="screen" >
+    <rosparam command="load" file="$(arg config)"/>
+  </node>
+
+</launch>
+
+
