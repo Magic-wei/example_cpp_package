@@ -11,7 +11,7 @@ lib1::lib1(float K):k(K),cmd1(0.0),cmd2(0.0) { }
 
 lib1::~lib1() = default;
 
-    void lib1::generateCmd(float sensor, std::string state){
+void lib1::generateCmd(float sensor, std::string state){
     if("forward" == state ){
         this->cmd1 = k * sensor;
         this->cmd2 = std::sin(sensor);

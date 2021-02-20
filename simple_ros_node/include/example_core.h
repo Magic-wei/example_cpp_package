@@ -16,30 +16,28 @@
 
 namespace example_core {
 
-using namespace lib1;
-
 class example_core
 {
 public:
-	example_core();
-	void callbackState(const std_msgs::String msg);
-	void callbackSensorData(const std_msgs::Float32 msg);
+    example_core();
+    void callbackState(const std_msgs::String msg);
+    void callbackSensorData(const std_msgs::Float32 msg);
 
-	lib1 cmdtest;
+    lib1::lib1 cmdtest;
 
-	ros::NodeHandle n;
-	ros::Subscriber sensor_sub ,state_sub;
+    ros::NodeHandle n;
+    ros::Subscriber sensor_sub ,state_sub;
     ros::Publisher vel_pub ,str_pub;
 
-	std::string id_;
-	bool is_sensor_update;
-	bool is_state_update;
-	std_msgs::Float32 sensor_data;
-	std_msgs::String state;
+    std::string id_;
+    bool is_sensor_update;
+    bool is_state_update;
+    std_msgs::Float32 sensor_data;
+    std_msgs::String state;
     std_msgs::Float32 cmd2;
     std_msgs::Float32 cmd1;
 
-	void run();
+    void run();
 
 };
 }

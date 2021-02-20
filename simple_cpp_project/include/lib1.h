@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-namespace GWZPrograms {
+namespace simple_cpp_project {
 
 class lib1 {
 public:

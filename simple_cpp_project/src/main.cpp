@@ -11,7 +11,7 @@ using namespace std;
 
 int main() {
 
-    GWZPrograms::lib1 test;
+    simple_cpp_project::lib1 test;
 
     double result = test.sum(1.0, 5.3);
 

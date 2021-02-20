@@ -7,7 +7,7 @@
 using std::cout;
 using std::endl;
 
-namespace GWZPrograms {
+namespace simple_cpp_project {
 
 lib1::lib1() {
     this->flag = false;
