@@ -1,0 +1,92 @@
+
+name: Build Packages
+
+on: [push]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build_simple_cpp_project:
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04, ubuntu-latest]
+    # The CMake configure and build commands are platform agnostic and should work equally
+    # well on Windows or Mac.  You can convert this to a matrix build if you need
+    # cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Create Build Environment
+      # Some projects don't allow in-source building, so create a separate build directory
+      # We'll use this as our working directory for all subsequent commands
+      run: cmake -E make_directory ${{github.workspace}}/build
+
+    - name: Configure CMake for simple_cpp_project
+      # Use a bash shell so we can use the same syntax for environment variable
+      # access regardless of the host operating system
+      shell: bash
+      working-directory: ${{github.workspace}}/build
+      # Note the current convention is to use the -S and -B options here to specify source 
+      # and build directories, but this is only available with CMake 3.13 and higher.  
+      # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
+      run: cmake ${{github.workspace}}/simple_cpp_project -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+    
+    - name: Build
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      run: cmake --build . --config $BUILD_TYPE
+
+  build_ros_packages:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-16.04
+            ros_dist: kinetic
+
+          - os: ubuntu-18.04
+            ros_dist: melodic
+
+          #- os: ubuntu-20.04 # ROS installation issue
+          #  ros_dist: noetic
+
+
+    runs-on: ${{ matrix.os }}
+    
+    env:
+      UBUNTU_NAME: "$(lsb_release -sc)"  # e.g. [trusty|xenial|...]
+      WORKSPACE: ${GITHUB_WORKSPACE} # $(pwd), /home/runner/work/my-repo-name/my-repo-name
+      ROS_DISTRO: ${{ matrix.ros_dist }}
+      CATKIN_WS_PATH: $HOME/catkin_ws
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install ROS
+        run: |
+            sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main\" > /etc/apt/sources.list.d/ros-latest.list"
+            sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+            
+            echo "Installing ROS $ROS_DISTRO ..."
+            sudo apt-get update -qq
+            sudo apt-get -y install ros-$ROS_DISTRO-desktop
+            sudo apt-get -qq install python-catkin-tools
+            sudo apt-get -qq install ros-$ROS_DISTRO-catkin
+            source /opt/ros/$ROS_DISTRO/setup.bash
+      
+      - name: Catkin Build
+        run: |
+          source /opt/ros/$ROS_DISTRO/setup.bash
+          mkdir -p ${{ env.CATKIN_WS_PATH }}/src
+          cd ${{ env.CATKIN_WS_PATH }}
+          catkin init
+          cd ${{ env.CATKIN_WS_PATH }}/src
+          ln -s $WORKSPACE  # soft link to repo dir
+          cd ${{ env.CATKIN_WS_PATH }}
+          catkin build
+
